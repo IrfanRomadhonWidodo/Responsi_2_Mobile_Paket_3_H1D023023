@@ -144,8 +144,17 @@ Bagian ini merangkum inisialisasi aplikasi, definisi rute, dan pengaturan autent
 | **`firebase_options.dart`** | **Konfigurasi Firebase** | File yang **dibuat otomatis** oleh **FlutterFire CLI**. Berisi semua **kunci API** dan ID proyek spesifik (`projectId: 'responsi2irfan'`) untuk setiap platform (Web, Android, iOS, macOS), memungkinkan `Firebase.initializeApp` berfungsi dengan benar di mana pun aplikasi dijalankan. |
 
 ---
-## 📷 Screenshot Aplikasi
+## 🖼️ Tampilan Aplikasi (Screenshot)
 
+Screenshot aplikasi ditempatkan di folder `assets/images/`.
+
+| Image 1 | Image 2 | Image 3 | Image 4 |
+| :---: | :---: | :---: | :---: |
+| ![](/assets/images/image1.jpeg) | ![](/assets/images/image2.jpeg) | ![](/assets/images/image3.jpeg) | ![](/assets/images/image4.jpeg) |
+| Image 5 | Image 6 | Image 7 | Image 8 |
+| ![](/assets/images/image5.jpeg) | ![](/assets/images/image6.jpeg) | ![](/assets/images/image7.jpeg) | ![](/assets/images/image8.jpeg) |
+| Image 9 | Image 10 | Image 11 | Image 12 |
+| ![](/assets/images/image9.jpeg) | ![](/assets/images/image10.jpeg) | ![](/assets/images/image11.jpeg) | ![](/assets/images/image12.jpeg) |
 
 ---
 ## 🎬 Video Demonstrasi Aplikasi
