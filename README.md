@@ -149,12 +149,12 @@ Bagian ini merangkum inisialisasi aplikasi, definisi rute, dan pengaturan autent
 Screenshot aplikasi ditempatkan di folder `assets/images/`.
 
 | Login | Register | Home | Edit Book |
-| :---: | :---: | :---: | :---: |
-| ![](/assets/images/image1.jpg) | ![](/assets/images/image2.jpg) | ![](/assets/images/image3.jpg) | ![](/assets/images/image4.jpg) |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/images/image1.jpg" width="200"> | <img src="assets/images/image2.jpg" width="200"> | <img src="assets/images/image3.jpg" width="200"> | <img src="assets/images/image4.jpg" width="200"> |
 | Detail Book | Delete Book | Add Book | Statistic |
-| ![](/assets/images/image5.jpg) | ![](/assets/images/image6.jpg) | ![](/assets/images/image7.jpg) | ![](/assets/images/image8.jpg) |
+| <img src="assets/images/image5.jpg" width="200"> | <img src="assets/images/image6.jpg" width="200"> | <img src="assets/images/image7.jpg" width="200"> | <img src="assets/images/image8.jpg" width="200"> |
 | Profile | Edit Profile | Password Change | Information |
-| ![](/assets/images/image9.jpg) | ![](/assets/images/image10.jpg) | ![](/assets/images/image11.jpg) | ![](/assets/images/image12.jpg) |
+| <img src="assets/images/image9.jpg" width="200"> | <img src="assets/images/image10.jpg" width="200"> | <img src="assets/images/image11.jpg" width="200"> | <img src="assets/images/image12.jpg" width="200"> |
 
 ---
 ## 🎬 Video Demonstrasi Aplikasi
