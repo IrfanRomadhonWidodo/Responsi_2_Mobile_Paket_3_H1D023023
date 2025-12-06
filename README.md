@@ -162,6 +162,7 @@ Screenshot aplikasi ditempatkan di folder `assets/images/`.
 Lihat fungsionalitas aplikasi ini secara langsung:
 
 *(Memuat video dapat memerlukan cukup waktu, dapat langsung dilihat di assets/demo)*
+
 ![Demo Aplikasi](assets/demo/demo_aplikasi.gif)
 ---
 
