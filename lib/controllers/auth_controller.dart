@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import '../utils/app_routes.dart'; // Tambahkan import ini
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -22,9 +23,10 @@ class AuthController extends GetxController {
 
   void _handleAuthChange(User? user) {
     if (user == null) {
-      Get.offAllNamed('/login');
+      Get.offAllNamed(AppRoutes.login);
     } else {
-      Get.offAllNamed('/home');
+      // Ubah dari '/home' ke '/main'
+      Get.offAllNamed(AppRoutes.main);
     }
   }
 
@@ -64,6 +66,22 @@ class AuthController extends GetxController {
     isHidden.value = !isHidden.value;
   }
 
+  // Mendapatkan data user saat ini
+  Future<Map<String, dynamic>?> getCurrentUserData() async {
+    if (_auth.currentUser == null) return null;
+
+    try {
+      final doc = await _db
+          .collection("users")
+          .doc(_auth.currentUser!.uid)
+          .get();
+      return doc.data();
+    } catch (e) {
+      print("Error getting user data: $e");
+      return null;
+    }
+  }
+
   // Login dengan validasi
   Future<void> login(String email, String password) async {
     // Validasi input
@@ -95,6 +113,9 @@ class AuthController extends GetxController {
         "lastLogin": FieldValue.serverTimestamp(),
         "isActive": true,
       });
+
+      // Ambil data user
+      await getCurrentUserData();
 
       Get.snackbar(
         "Login Berhasil",
@@ -189,7 +210,7 @@ class AuthController extends GetxController {
       );
 
       // Redirect ke login
-      Get.offAllNamed('/login');
+      Get.offAllNamed(AppRoutes.login);
     } on FirebaseAuthException catch (e) {
       String errorMessage;
 
@@ -296,7 +317,7 @@ class AuthController extends GetxController {
       );
 
       // Kembali ke halaman login
-      Get.offAllNamed('/login');
+      Get.offAllNamed(AppRoutes.login);
     } on FirebaseAuthException catch (e) {
       String errorMessage;
 
@@ -328,22 +349,6 @@ class AuthController extends GetxController {
       );
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  // Mendapatkan data user saat ini
-  Future<Map<String, dynamic>?> getCurrentUserData() async {
-    if (_auth.currentUser == null) return null;
-
-    try {
-      final doc = await _db
-          .collection("users")
-          .doc(_auth.currentUser!.uid)
-          .get();
-      return doc.data();
-    } catch (e) {
-      print("Error getting user data: $e");
-      return null;
     }
   }
 }

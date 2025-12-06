@@ -17,12 +17,13 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Inventaris Buku Irfan"),
-        actions: [
-          IconButton(
-            onPressed: () => authC.logout(),
-            icon: const Icon(Icons.logout),
-          ),
-        ],
+        // Hapus bagian actions di bawah ini
+        // actions: [
+        //   IconButton(
+        //     onPressed: () => authC.logout(),
+        //     icon: const Icon(Icons.logout),
+        //   ),
+        // ],
       ),
       body: Container(
         decoration: const BoxDecoration(

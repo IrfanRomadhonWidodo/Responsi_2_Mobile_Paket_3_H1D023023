@@ -5,13 +5,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/book_controller.dart';
+import 'controllers/profile_controller.dart';
 import 'utils/app_routes.dart';
 import 'pages/auth/login_page.dart';
 import 'pages/auth/register_page.dart';
+import 'pages/main_page.dart';
 import 'pages/home_page.dart';
 import 'pages/add_book_page.dart';
 import 'pages/book_detail_page.dart';
 import 'pages/edit_book_page.dart';
+import 'pages/statistics_page.dart';
+import 'pages/profile_page.dart';
 import 'models/book_model.dart';
 
 void main() async {
@@ -21,7 +25,7 @@ void main() async {
   // Inisialisasi controllers
   Get.put(AuthController());
   Get.put(BookController());
-
+  Get.put(ProfileController());
   runApp(const MyApp());
 }
 
@@ -67,8 +71,23 @@ class MyApp extends StatelessWidget {
         GetPage(name: AppRoutes.login, page: () => const LoginPage()),
         GetPage(name: AppRoutes.register, page: () => const RegisterPage()),
         GetPage(
+          name: AppRoutes.main,
+          page: () => const MainPage(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
           name: AppRoutes.home,
           page: () => const HomePage(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: AppRoutes.statistics,
+          page: () => const StatisticsPage(),
+          middlewares: [AuthMiddleware()],
+        ),
+        GetPage(
+          name: AppRoutes.profile,
+          page: () => const ProfilePage(),
           middlewares: [AuthMiddleware()],
         ),
         GetPage(
@@ -76,7 +95,6 @@ class MyApp extends StatelessWidget {
           page: () => const AddBookPage(),
           middlewares: [AuthMiddleware()],
         ),
-        // Perbaikan untuk BookDetailPage dan EditBookPage
         GetPage(
           name: AppRoutes.bookDetail,
           page: () {
@@ -116,7 +134,7 @@ class AuthMiddleware extends GetMiddleware {
     // Jika user sudah login dan mencoba mengakses halaman login/register
     if (authController.firebaseUser.value != null &&
         (route == AppRoutes.login || route == AppRoutes.register)) {
-      return const RouteSettings(name: AppRoutes.home);
+      return const RouteSettings(name: AppRoutes.main);
     }
 
     return null;

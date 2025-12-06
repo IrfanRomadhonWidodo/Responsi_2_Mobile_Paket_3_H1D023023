@@ -87,28 +87,36 @@ class BookDetailPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildInfoRow("Jumlah", "${book.jumlah} buah"),
                   const SizedBox(height: 12),
-                  _buildInfoRow("Volume", "${book.volume} cm³"),
+                  _buildInfoRow("Volume", "${book.volume} "),
                   const SizedBox(height: 12),
                   _buildInfoRow("Tanggal Masuk", book.tanggalMasuk),
                   const SizedBox(height: 24),
 
-                  // Status Stok
+                  // Status Stok dengan warna coklat
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: book.jumlah > 10
-                          ? Colors.green.shade100
+                          ? Colors
+                                .brown
+                                .shade100 // Ganti dari green ke brown
                           : book.jumlah > 0
-                          ? Colors.orange.shade100
-                          : Colors.red.shade100,
+                          ? Colors
+                                .brown
+                                .shade200 // Ganti dari orange ke brown
+                          : Colors.brown.shade300, // Ganti dari red ke brown
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: book.jumlah > 10
-                            ? Colors.green.shade300
+                            ? Colors
+                                  .brown
+                                  .shade300 // Ganti dari green ke brown
                             : book.jumlah > 0
-                            ? Colors.orange.shade300
-                            : Colors.red.shade300,
+                            ? Colors
+                                  .brown
+                                  .shade400 // Ganti dari orange ke brown
+                            : Colors.brown.shade500, // Ganti dari red ke brown
                       ),
                     ),
                     child: Column(
@@ -119,10 +127,16 @@ class BookDetailPage extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: book.jumlah > 10
-                                ? Colors.green.shade800
+                                ? Colors
+                                      .brown
+                                      .shade800 // Ganti dari green ke brown
                                 : book.jumlah > 0
-                                ? Colors.orange.shade800
-                                : Colors.red.shade800,
+                                ? Colors
+                                      .brown
+                                      .shade800 // Ganti dari orange ke brown
+                                : Colors
+                                      .brown
+                                      .shade800, // Ganti dari red ke brown
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -135,10 +149,16 @@ class BookDetailPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             color: book.jumlah > 10
-                                ? Colors.green.shade700
+                                ? Colors
+                                      .brown
+                                      .shade700 // Ganti dari green ke brown
                                 : book.jumlah > 0
-                                ? Colors.orange.shade700
-                                : Colors.red.shade700,
+                                ? Colors
+                                      .brown
+                                      .shade700 // Ganti dari orange ke brown
+                                : Colors
+                                      .brown
+                                      .shade700, // Ganti dari red ke brown
                           ),
                         ),
                       ],
