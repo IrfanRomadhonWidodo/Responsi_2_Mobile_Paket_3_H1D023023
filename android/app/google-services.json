@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "315738878852",
+    "project_id": "responsi2irfan",
+    "storage_bucket": "responsi2irfan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315738878852:android:c03ed5f1b5a32d8c0823d1",
+        "android_client_info": {
+          "package_name": "com.example.responsi_2_mobile_paket_3_h1d023023"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQnKJTeIym1Adc0O_oLYRodMRDb7BPOZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315738878852:android:8cf2fbbff62703cb0823d1",
+        "android_client_info": {
+          "package_name": "com.irfan.responsi_2_mobile_paket_3_h1d023023"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQnKJTeIym1Adc0O_oLYRodMRDb7BPOZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
