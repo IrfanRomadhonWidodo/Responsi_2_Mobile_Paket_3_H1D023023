@@ -12,7 +12,7 @@ Aplikasi mobile ini dikembangkan menggunakan **[Sebutkan Framework/Bahasa Anda, 
 | :--- | :--- |
 | **Nama Lengkap** | **Irfan Romadhon Widodo** |
 | **NIM** | **H1D023023** |
-| **Asal Institusi** | **[NAMA UNIVERSITAS/INSTITUSI ANDA]** |
+| **Asal Institusi** | **Universitas Jenderal Soedirman** |
 | **Shift Lama** | D |
 | **Shift Baru** | F |
 
@@ -48,46 +48,61 @@ lib/
 └─ utils/
      app_routes.dart
 ```
-### 🛠️ Spesifikasi Layanan Backend (API)
+## 🛠️ Spesifikasi Layanan Backend (API) ☁️
 
-Aplikasi ini menggunakan **Google Firebase** untuk tiga layanan utama:
+Aplikasi E-Library Manager ini sepenuhnya mengandalkan **Google Firebase** untuk menyediakan infrastruktur *real-time* dan keamanan data.
 
-1.  **Firebase Authentication:** Mengelola otentikasi pengguna (Login/Register).
-2.  **Cloud Firestore:** Basis data NoSQL untuk menyimpan data `BookModel` dan `UserModel`.
-3.  **Firebase Storage:** **[Sebutkan 'Digunakan' jika menyimpan gambar, atau 'Tidak Digunakan']**.
+| Layanan Firebase | Fungsi Utama dalam Aplikasi | Implementasi Kode Kunci |
+| :--- | :--- | :--- |
+| **1. Firebase Authentication** | Mengelola otentikasi pengguna (**Login** dan **Registrasi**). | **`auth_controller.dart`** menggunakan `createUserWithEmailAndPassword()` dan `signInWithEmailAndPassword()` untuk otentikasi. |
+| **2. Cloud Firestore** | Basis data **NoSQL** yang digunakan untuk menyimpan data utama: `BookModel` dan `UserModel`. | **`book_controller.dart`** menggunakan `collection().snapshots()` untuk *real-time reading* dan `add()`, `update()`, `delete()` untuk operasi **CRUD** data buku. |
 
 ---
 
 ## 📖 Penjelasan Kode Detail per Fungsi
 
-Penjelasan ini berfokus pada bagaimana logika bisnis di **`controllers/`** berinteraksi dengan Firebase untuk mencapai fungsionalitas aplikasi.
+Penjelasan ini berfokus pada bagaimana logika di **`controllers/`** berinteraksi dengan Firebase untuk mencapai fungsionalitas aplikasi.
 
-### 1. Otentikasi Pengguna (Firebase Auth)
+### 1. Otentikasi Pengguna (Firebase Auth & Firestore) 🔒
 
-| File | Fungsi Utama | Snippet & Penjelasan |
+Bagian ini menjelaskan alur otentikasi pengguna menggunakan **Firebase Authentication** yang dikelola oleh `AuthController` dan bagaimana data profil awal disimpan ke **Cloud Firestore**.
+
+| File | Fungsi Utama | Detail Implementasi & Interaksi |
 | :--- | :--- | :--- |
-| **`controllers/auth_controller.dart`** | **Registrasi** | Menggunakan `FirebaseAuth.instance.createUserWithEmailAndPassword()`. Setelah berhasil, menyimpan data `UserModel` awal ke koleksi `users` di Firestore. |
-| **`controllers/auth_controller.dart`** | **Login** | Menggunakan `FirebaseAuth.instance.signInWithEmailAndPassword()` untuk memverifikasi kredensial pengguna. |
-| **`pages/auth/login_page.dart`** | **View Login** | Memicu fungsi login pada `AuthController` dan mengarahkan pengguna ke `HomePage` setelah berhasil. |
+| **`controllers/auth_controller.dart`** | **Registrasi** | Menggunakan `createUserWithEmailAndPassword()` untuk membuat user. Setelah berhasil, controller **secara otomatis** menyimpan data awal (`name`, `email`, `createdAt`, `role: "user"`) ke koleksi Firestore: `_db.collection("users").doc(userCredential.user!.uid).set(...)`. |
+| **`controllers/auth_controller.dart`** | **Login** | Menggunakan `signInWithEmailAndPassword()` untuk verifikasi. Setelah login, controller melakukan *update* status (`isActive: true` dan `lastLogin`) di dokumen Firestore user yang bersangkutan. |
+| **`controllers/auth_controller.dart`** | **Logout** | Menggunakan `_auth.signOut()`. Sebelum keluar, controller melakukan *update* status **`isActive: false`** di Firestore. |
+| **`controllers/auth_controller.dart`** | **State Management** | Method `_handleAuthChange` di `onInit()` menggunakan **`_auth.authStateChanges()`** untuk memantau status login *real-time* dan melakukan *redirect* ke `/login` atau `/main`. |
+| **`controllers/auth_controller.dart`** | **Password Recovery** | Terdapat fungsi **`resetPassword`** yang memanggil `_auth.sendPasswordResetEmail()` dan fungsi **`updatePassword`** yang memerlukan *re-autentikasi* pengguna. |
+| **`pages/auth/login_page.dart`** | **View Login** | Memicu `authC.login(emailC.text, passC.text)`. Menggunakan **Obx** dari GetX untuk menampilkan *loading state* (`CircularProgressIndicator`) dan mengelola *toggle* **`isHidden`** (visibilitas password). |
+| **`pages/auth/register_page.dart`** | **View Registrasi** | Memicu `authC.register(...)`. Halaman ini menyediakan *Form* input dan memanggil controller yang bertanggung jawab untuk validasi dan penyimpanan data awal ke Firebase. |
 
-### 2. Manajemen Buku (CRUD - Cloud Firestore)
+---
+## 2. Manajemen Buku (CRUD - Cloud Firestore) 📚
 
-Semua fungsi di bawah ini terletak di **`controllers/book_controller.dart`**.
+Bagian ini menjelaskan detail implementasi operasi CRUD (Create, Read, Update, Delete) untuk entitas **Buku** (Inventaris) yang dikelola oleh `BookController` dan disimpan di koleksi Firestore **`books`**.
 
-| Fungsi CRUD | Detail Implementasi Kode |
-| :--- | :--- |
-| **C**reate (`addBook`) | Memanggil `FirebaseFirestore.instance.collection('books').add(bookModel.toJson())`. Data buku dikonversi dari `BookModel` ke format Map menggunakan `toJson()` sebelum disimpan. |
-| **R**ead (`fetchBooks`) | Menggunakan **`.snapshots()`** pada koleksi `books` untuk mendapatkan `Stream<QuerySnapshot>`. Data stream ini diproses di **`pages/home_page.dart`** menggunakan `StreamBuilder` dan dikonversi kembali menjadi `List<BookModel>`. |
-| **U**pdate (`updateBook`) | Memanggil `collection('books').doc(documentId).update(newData)`. Memastikan pembaruan hanya terjadi pada dokumen yang ditargetkan menggunakan `documentId` yang diperoleh saat membaca data. |
-| **D**elete (`deleteBook`) | Memanggil `collection('books').doc(documentId).delete()`. Fungsi ini membersihkan dokumen buku secara permanen dari basis data. |
-
-### 3. Model Data & Konversi
-
-| File | Fungsi Utama | Snippet & Penjelasan |
+| File | Fungsi CRUD / Utama | Detail Implementasi & Interaksi |
 | :--- | :--- | :--- |
-| **`models/book_model.dart`** | **Konversi Data** | Wajib memiliki *factory constructor* `BookModel.fromFirestore(DocumentSnapshot doc)` untuk memetakan data dari Firestore ke objek Dart, dan metode `toJson()` untuk memetakan objek Dart kembali ke format Map yang diterima Firestore. |
-| **`models/user_model.dart`** | **Struktur Pengguna** | Mendefinisikan *field* pengguna (`uid`, `name`, `email`) dan menyertakan metode `fromJson`/`toJson` untuk interaksi dengan koleksi `users` di Firestore, yang biasanya dibuat saat pendaftaran. |
+| **`controllers/book_controller.dart`** | **C**reate (`addBook`) | Mengambil objek `BookModel` dan memanggil **`_firestore.collection('books').add(book.toMap())`**. Konversi dari objek Dart ke format Firestore dilakukan menggunakan *method* **`.toMap()`**. Setelah berhasil, memicu **`fetchBooks()`** untuk *refresh* data di UI. |
+| **`controllers/book_controller.dart`** | **R**ead (`fetchBooks`) | Menggunakan *one-time fetch* **`await _firestore.collection('books').get()`**. Dokumen dikonversi menjadi `BookModel` menggunakan **`BookModel.fromMap(doc.id, doc.data())`**, kemudian disimpan ke **`RxList<BookModel> books`** milik GetX. |
+| **`controllers/book_controller.dart`** | **U**pdate (`updateBook`) | Menerima **`id`** dokumen dan objek `BookModel` baru. Memanggil **`_firestore.collection('books').doc(id).update(book.toMap())`**. ID dokumen digunakan untuk menargetkan dokumen. |
+| **`controllers/book_controller.dart`** | **D**elete (`deleteBook`) | Menerima **`id`** dokumen yang akan dihapus. Memanggil **`_firestore.collection('books').doc(id).delete()`**. Controller memanggil **`fetchBooks()`** untuk *refresh* list setelah operasi. |
+| **`pages/add_book_page.dart`** | **View Create** | Menyediakan **`Form`** dengan validasi. Memanggil `bookC.addBook(...)` setelah validasi berhasil (data dikonversi ke `BookModel`). |
+| **`pages/edit_book_page.dart`** | **View Update** | Menginisialisasi *TextController* dengan data yang diterima. Memanggil `bookC.updateBook(book.id!, book)` saat tombol **Update** ditekan. |
+| **`pages/book_detail.dart`** | **View Detail/Actions** | Menampilkan detail buku. Ikon **Delete** memicu **`AlertDialog`** konfirmasi sebelum memanggil **`bookC.deleteBook(book.id!)`**. |
 
+---
+## 3. Model Data & Konversi (Mapping) 🔄
+
+Bagian ini menjelaskan struktur *Model* data utama (`BookModel` dan `UserModel`) dan bagaimana mereka bertanggung jawab melakukan konversi data dua arah (**Dart Object $\leftrightarrow$ Firestore Map**).
+
+| File | Fungsi Utama | Penjelasan Snippet Kode Inti |
+| :--- | :--- | :--- |
+| **`models/book_model.dart`** | **Dart Object $\to$ Firestore Map** | Metode **`toMap()`** mengambil semua *field* dari objek `BookModel` dan mengubahnya menjadi `Map<String, dynamic>`. Ini dipanggil saat operasi **Create** atau **Update** di `BookController`. |
+| **`models/book_model.dart`** | **Firestore Map $\to$ Dart Object** | *Factory constructor* **`BookModel.fromMap(String id, Map<String, dynamic> map)`** menerima data Map dari Firestore dan Document ID, lalu membangun kembali objek `BookModel` (termasuk *id*-nya). Ini dipanggil saat operasi **Read** di `BookController`. |
+| **`models/user_model.dart`** | **Konversi Waktu (Timestamp)** | Dalam **`UserModel.fromMap`**, *field* `createdAt` secara spesifik dikonversi dari tipe data Firestore **`Timestamp`** menjadi objek **`DateTime`** Dart menggunakan `(map['createdAt'] as Timestamp).toDate()`. |
+| **`models/user_model.dart`** | **Firestore Mapping** | Memiliki metode **`toMap()`** dan *factory* **`UserModel.fromMap`** yang mirip dengan `BookModel`, digunakan oleh `AuthController` untuk menyimpan data profil pengguna baru ke koleksi `users` dan membaca profil saat *login*. |
 ---
 
 ## 🎬 Video Demonstrasi Aplikasi
