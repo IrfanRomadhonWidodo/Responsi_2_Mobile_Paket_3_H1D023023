@@ -148,13 +148,13 @@ Bagian ini merangkum inisialisasi aplikasi, definisi rute, dan pengaturan autent
 
 Screenshot aplikasi ditempatkan di folder `assets/images/`.
 
-| Image 1 | Image 2 | Image 3 | Image 4 |
+| Login | Register | Home | Edit Book |
 | :---: | :---: | :---: | :---: |
-| ![](/assets/images/image1.jpeg) | ![](/assets/images/image2.jpeg) | ![](/assets/images/image3.jpeg) | ![](/assets/images/image4.jpeg) |
-| Image 5 | Image 6 | Image 7 | Image 8 |
-| ![](/assets/images/image5.jpeg) | ![](/assets/images/image6.jpeg) | ![](/assets/images/image7.jpeg) | ![](/assets/images/image8.jpeg) |
-| Image 9 | Image 10 | Image 11 | Image 12 |
-| ![](/assets/images/image9.jpeg) | ![](/assets/images/image10.jpeg) | ![](/assets/images/image11.jpeg) | ![](/assets/images/image12.jpeg) |
+| ![](/assets/images/image1.jpg) | ![](/assets/images/image2.jpg) | ![](/assets/images/image3.jpg) | ![](/assets/images/image4.jpg) |
+| Detail Book | Delete Book | Add Book | Statistic |
+| ![](/assets/images/image5.jpg) | ![](/assets/images/image6.jpg) | ![](/assets/images/image7.jpg) | ![](/assets/images/image8.jpg) |
+| Profile | Edit Profile | Password Change | Information |
+| ![](/assets/images/image9.jpg) | ![](/assets/images/image10.jpg) | ![](/assets/images/image11.jpg) | ![](/assets/images/image12.jpg) |
 
 ---
 ## 🎬 Video Demonstrasi Aplikasi
