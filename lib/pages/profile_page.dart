@@ -212,29 +212,115 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showChangePasswordDialog() {
-    final emailC = TextEditingController(
-      text: authC.firebaseUser.value?.email ?? '',
-    );
+    final currentPasswordC = TextEditingController();
+    final newPasswordC = TextEditingController();
+    final confirmPasswordC = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
     Get.dialog(
       AlertDialog(
         title: const Text("Ubah Password"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Kami akan mengirimkan link reset password ke email Anda.",
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: emailC,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                hintText: "Masukkan email Anda",
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Masukkan password saat ini dan password baru Anda",
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+
+              // Password saat ini
+              Obx(
+                () => TextFormField(
+                  controller: currentPasswordC,
+                  obscureText: authC.isHidden.value,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password saat ini tidak boleh kosong';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Password Saat Ini",
+                    hintText: "Masukkan password saat ini",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        authC.isHidden.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: const Color(0xFF8D6E63),
+                      ),
+                      onPressed: () => authC.togglePasswordVisibility(),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Password baru
+              Obx(
+                () => TextFormField(
+                  controller: newPasswordC,
+                  obscureText: authC.isHidden.value,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password baru tidak boleh kosong';
+                    }
+                    if (value.length < 6) {
+                      return 'Password minimal 6 karakter';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Password Baru",
+                    hintText: "Masukkan password baru",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        authC.isHidden.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: const Color(0xFF8D6E63),
+                      ),
+                      onPressed: () => authC.togglePasswordVisibility(),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Konfirmasi password baru
+              Obx(
+                () => TextFormField(
+                  controller: confirmPasswordC,
+                  obscureText: authC.isHidden.value,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Konfirmasi password tidak boleh kosong';
+                    }
+                    if (value != newPasswordC.text) {
+                      return 'Password tidak cocok';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Konfirmasi Password Baru",
+                    hintText: "Masukkan kembali password baru",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        authC.isHidden.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: const Color(0xFF8D6E63),
+                      ),
+                      onPressed: () => authC.togglePasswordVisibility(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
@@ -243,8 +329,11 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: authC.isLoading.value
                   ? null
                   : () {
-                      if (emailC.text.trim().isNotEmpty) {
-                        authC.resetPassword(emailC.text.trim());
+                      if (formKey.currentState!.validate()) {
+                        authC.updatePassword(
+                          currentPasswordC.text.trim(),
+                          newPasswordC.text.trim(),
+                        );
                       }
                     },
               child: authC.isLoading.value
@@ -256,7 +345,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text("Kirim"),
+                  : const Text("Simpan"),
             ),
           ),
         ],

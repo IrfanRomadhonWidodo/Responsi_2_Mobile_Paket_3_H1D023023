@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import '../utils/app_routes.dart'; // Tambahkan import ini
+import '../utils/app_routes.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -342,6 +342,84 @@ class AuthController extends GetxController {
     } catch (e) {
       Get.snackbar(
         "Gagal Mengirim Email",
+        'Terjadi kesalahan: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Update password langsung di aplikasi
+  Future<void> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    try {
+      isLoading.value = true;
+
+      // Dapatkan user saat ini
+      final user = _auth.currentUser;
+      if (user == null) {
+        Get.snackbar(
+          "Error",
+          "Tidak ada pengguna yang login",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade900,
+        );
+        return;
+      }
+
+      // Buat kredensial untuk autentikasi ulang
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+
+      // Autentikasi ulang user
+      await user.reauthenticateWithCredential(credential);
+
+      // Update password
+      await user.updatePassword(newPassword);
+
+      Get.back();
+      Get.snackbar(
+        "Berhasil",
+        "Password berhasil diperbarui",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.shade100,
+        colorText: Colors.green.shade900,
+      );
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+
+      switch (e.code) {
+        case 'wrong-password':
+          errorMessage = 'Password saat ini salah';
+          break;
+        case 'weak-password':
+          errorMessage = 'Password baru terlalu lemah (minimal 6 karakter)';
+          break;
+        case 'requires-recent-login':
+          errorMessage = 'Silakan login kembali untuk mengubah password';
+          break;
+        default:
+          errorMessage = 'Gagal mengubah password: ${e.message}';
+      }
+
+      Get.snackbar(
+        "Error",
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
         'Terjadi kesalahan: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
