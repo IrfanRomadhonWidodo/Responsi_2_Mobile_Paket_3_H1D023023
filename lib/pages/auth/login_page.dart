@@ -1,15 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Tambahkan import ini
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  // Ubah ke StatefulWidget
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final AuthController authC = Get.find<AuthController>();
+  // Pindahkan controller ke level state
+  final TextEditingController emailC = TextEditingController();
+  final TextEditingController passC = TextEditingController();
+
+  @override
+  void dispose() {
+    // Bersihkan controller saat widget dihancurkan
+    emailC.dispose();
+    passC.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authC = Get.find<AuthController>();
-    final emailC = TextEditingController();
-    final passC = TextEditingController();
+    // Atur tema status bar dan navigation bar
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Color(0xFF5D4037),
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
