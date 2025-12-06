@@ -1,3 +1,11 @@
+![Flutter](https://img.shields.io/badge/Flutter-3.24.0-blue?logo=flutter&style=for-the-badge)
+![Dart](https://img.shields.io/badge/Dart-3.9.2-0175C2?logo=dart&style=for-the-badge)
+![Firebase Auth](https://img.shields.io/badge/Firebase-Auth-F5820B?logo=firebase&style=for-the-badge)
+![Firestore](https://img.shields.io/badge/Firebase-Firestore-FFCA28?logo=firebase&style=for-the-badge)
+![Backend](https://img.shields.io/badge/Backend-Firebase%20Cloud-039BE5?style=for-the-badge)
+![API](https://img.shields.io/badge/API-RealTime%20Database-43A047?style=for-the-badge)
+![StateMgmt](https://img.shields.io/badge/State%20Management-GetX-7B1FA2?style=for-the-badge)
+
 # 📚 E-Library Manager: Aplikasi Manajemen Buku Berbasis Firebase
 
 ## 💻 Project Responsi II Mobile Programming (Paket 3)
