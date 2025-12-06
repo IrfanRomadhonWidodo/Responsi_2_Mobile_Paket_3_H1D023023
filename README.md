@@ -103,13 +103,48 @@ Bagian ini menjelaskan struktur *Model* data utama (`BookModel` dan `UserModel`)
 | **`models/book_model.dart`** | **Firestore Map $\to$ Dart Object** | *Factory constructor* **`BookModel.fromMap(String id, Map<String, dynamic> map)`** menerima data Map dari Firestore dan Document ID, lalu membangun kembali objek `BookModel` (termasuk *id*-nya). Ini dipanggil saat operasi **Read** di `BookController`. |
 | **`models/user_model.dart`** | **Konversi Waktu (Timestamp)** | Dalam **`UserModel.fromMap`**, *field* `createdAt` secara spesifik dikonversi dari tipe data Firestore **`Timestamp`** menjadi objek **`DateTime`** Dart menggunakan `(map['createdAt'] as Timestamp).toDate()`. |
 | **`models/user_model.dart`** | **Firestore Mapping** | Memiliki metode **`toMap()`** dan *factory* **`UserModel.fromMap`** yang mirip dengan `BookModel`, digunakan oleh `AuthController` untuk menyimpan data profil pengguna baru ke koleksi `users` dan membaca profil saat *login*. |
----
 
+---
+---
+## 4. Manajemen Profil & Tampilan Data (Home, Profile, Statistics) 👤📊
+
+Bagian ini menjelaskan fungsionalitas non-CRUD utama, yaitu: menampilkan data pengguna, memperbarui profil, mengelola sesi, dan menyajikan ringkasan inventaris dalam bentuk statistik.
+
+| File | Fungsi Utama | Detail Implementasi & Interaksi |
+| :--- | :--- | :--- |
+| **`controllers/profile_controller.dart`** | **Muat Data Profil** (`getUserData`) | Dipanggil di `onInit()` menggunakan *listener* `ever(firebaseUser, ...)` setelah user terautentikasi. Mengambil data **sekali (one-time get)** dari Firestore `collection('users').doc(user.uid).get()`, lalu memetakannya ke objek observabel `Rx<UserModel> currentUser`. |
+| **`controllers/profile_controller.dart`** | **Update Profil** (`updateProfile`) | Melakukan dua *update* asinkron: **1.** Memperbarui `displayName` di **Firebase Auth** (`user.updateDisplayName(name)`). **2.** Memperbarui *field* `name` di **Firestore** (`.update({'name': name})`). Data lokal `currentUser` diperbarui secara manual setelah sukses. |
+| **`pages/profile_page.dart`** | **View Profil** | Menggunakan `Obx` untuk menampilkan data dari `profileC.currentUser.value`. Tombol **Edit** (Nama) memicu `_showEditNameDialog` yang kemudian memanggil `profileC.updateProfile`. Tombol **Logout** memanggil `authC.logout()`. |
+| **`pages/profile_page.dart`** | **Ubah Password** (Dialog) | Fungsi `_showChangePasswordDialog()` menampilkan *form* validasi. Aksi ini memicu `authC.updatePassword` (yang kemungkinan ada di `AuthController`), memerlukan input **password saat ini** untuk *re-autentikasi* sebelum mengubah password. |
+| **`pages/home_page.dart`** | **List Data Utama** | Menampilkan daftar buku dari **`bookC.books`** (sebuah `RxList`) dalam sebuah `ListView.builder`. Menggunakan `Obx` dan `RefreshIndicator` (`onRefresh: () => bookC.fetchBooks()`) untuk pembaruan data. Navigasi ke detail buku menggunakan `Get.toNamed` dengan objek `book` sebagai *argument*. |
+| **`pages/statistics_page.dart`** | **Statistik Inventaris** | Menggunakan data observabel **`bookC.books`** untuk melakukan perhitungan lokal (*fold* dan *where*): Total Judul, Total Kuantitas, Total Nilai Inventaris (Stok x Harga), dan jumlah buku **Stok Menipis** (`jumlah <= 5`) dan **Stok Habis** (`jumlah == 0`). |
+| **`pages/statistics_page.dart`** | **Tampilan Statistik** | Menampilkan hasil perhitungan dalam serangkaian *widget* **`_buildStatCard`** dan *Progress Bar* **`_buildStatusRow`**. Tampilan ini bersifat *reactive* karena dibungkus dalam `Obx` yang bergantung pada perubahan pada `bookC.books`. |
+
+---
+## 5. Konfigurasi Utama, Routing, dan Setup Firebase ⚙️
+
+Bagian ini merangkum inisialisasi aplikasi, definisi rute, dan pengaturan autentikasi middleware menggunakan GetX.
+
+| File | Fungsi Utama | Detail Implementasi & Interaksi |
+| :--- | :--- | :--- |
+| **`main.dart`** | **Inisialisasi Aplikasi** | Fungsi `main()` adalah *entry point* aplikasi. Ia memanggil `WidgetsFlutterBinding.ensureInitialized()` diikuti oleh **`Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)`** untuk menginisialisasi Firebase di platform yang sesuai. |
+| **`main.dart`** | **Inisialisasi Dependency** | Menggunakan **`Get.put()`** untuk mendaftarkan *Controller* utama (`AuthController`, `BookController`, `ProfileController`) secara permanen (*permanent dependency*) di dalam *dependency injection* GetX. |
+| **`main.dart`** | **Konfigurasi GetMaterialApp** | Mengatur **Tema** aplikasi (dominan warna cokelat), **`initialRoute`** ke `AppRoutes.login`, dan mendaftarkan semua rute aplikasi dalam *list* **`getPages`**. |
+| **`main.dart`** | **`AuthMiddleware`** (Pengawal Rute) | Diterapkan ke semua rute setelah Login/Register. Tugasnya: **1.** Mencegah pengguna yang **belum login** mengakses halaman terproteksi (mengarahkan ke `/login`). **2.** Mencegah pengguna yang **sudah login** kembali ke halaman `/login` atau `/register` (mengarahkan ke `/main`). |
+| **`utils/app_routes.dart`** | **Definisi Nama Rute** | Berisi konstanta `static const String` untuk semua nama rute, memastikan konsistensi dan menghindari *typo* saat navigasi (e.g., `AppRoutes.main`, `AppRoutes.bookDetail`). |
+| **`main.dart`** | **Penerusan Argumen Rute** | Rute dinamis seperti `AppRoutes.bookDetail` dan `AppRoutes.editBook` mengambil objek **`BookModel`** yang dilewatkan melalui `Get.arguments` saat navigasi, dan objek ini kemudian digunakan untuk inisialisasi halaman (e.g., `BookDetailPage(book: book)`). |
+| **`firebase_options.dart`** | **Konfigurasi Firebase** | File yang **dibuat otomatis** oleh **FlutterFire CLI**. Berisi semua **kunci API** dan ID proyek spesifik (`projectId: 'responsi2irfan'`) untuk setiap platform (Web, Android, iOS, macOS), memungkinkan `Firebase.initializeApp` berfungsi dengan benar di mana pun aplikasi dijalankan. |
+
+---
+## 📷 Screenshot Aplikasi
+
+
+---
 ## 🎬 Video Demonstrasi Aplikasi
 
 Lihat fungsionalitas aplikasi ini secara langsung:
 
-▶️ **[LINK VIDEO DEMO ANDA]**
+▶️ ****
 
 ---
 
